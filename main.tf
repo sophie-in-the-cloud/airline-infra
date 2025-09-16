@@ -29,7 +29,7 @@ module "sg" {
   source     = "./modules/sg"
   prefix     = local.prefix
   vpc_id     = module.network.vpc_id
-  my_ip_cidr = "165.225.228.251/32"
+  my_ip_cidr = "165.225.229.3/32"
   eks_api_sg_id = data.aws_security_group.eks_cluster_sg.id
   eks_node_sg_id = module.sg.eks_node_sg_id
 }
@@ -61,4 +61,20 @@ module "eks" {
 module "iam" {
   source           = "./modules/iam"
   prefix           = local.prefix
+}
+
+module "db" {
+  source = "./modules/db"
+
+  allocated_storage    = 20
+  engine               = "mysql"
+  engine_version       = "8.0"
+  instance_class       = "db.t3.micro"
+  db_name              = "skyline"
+  username             = "skyline_user"
+  password             = "changeme"
+  security_group_ids   = [module.sg.db_sg_id]
+  private_subnet_ids  = [module.network.private_subnet_ids[4], module.network.private_subnet_ids[5]]
+  parameter_group_name = "default.mysql8.0"
+
 }

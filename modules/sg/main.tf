@@ -82,3 +82,23 @@ resource "aws_security_group" "eks_node_sg" {
     Name = "${var.prefix}-eks-node-sg"
   }
 }
+
+resource "aws_security_group" "db" {
+   name        = "${var.prefix}-db-sg"
+  vpc_id = var.vpc_id
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["10.20.0.0/16"] # VPC 내부에서만 접근 허용
+  }
+
+   egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+}
